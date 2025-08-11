@@ -1,208 +1,152 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <title>WB SKU Checker — Админка лицензий</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <style>
-    :root {
-      --bg: #0f1115;
-      --card: #151922;
-      --muted: #9aa4b2;
-      --text: #e7ecf3;
-      --surface: #0c1016;
-      --border: #242a36;
-      --accent: #2a62ff;
-      --radius: 14px;
-    }
-    *{ box-sizing: border-box; }
-    html, body { height: 100%; }
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font: 14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
-    }
-    h1 { font-size: 22px; margin: 0 0 16px; }
-    h2 { font-size: 16px; margin: 0 0 12px; }
-    .wrap { max-width: 1000px; margin: 24px auto; padding: 0 16px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
-    .card { background: var(--card); border-radius: var(--radius); padding: 16px; border: 1px solid rgba(255,255,255,.04); box-shadow: 0 4px 16px rgba(0,0,0,.2); }
-    label { display: block; color: var(--muted); margin: 10px 0 6px; font-size: 12px; letter-spacing: .2px; }
-    input, select, textarea {
-      width: 100%; background: var(--surface); color: var(--text);
-      border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px;
-      outline: none;
-    }
-    input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(42,98,255,.2); }
-    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .btn {
-      background: var(--accent); color: #fff; border: none; border-radius: 10px;
-      padding: 10px 12px; cursor: pointer; font-weight: 600;
-    }
-    .btn.secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
-    .btn:disabled { opacity: .6; cursor: default; }
-    .btns { display:flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
-    .log {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 10px; padding: 10px; height: 160px; overflow: auto; white-space: pre-wrap;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-    }
-    footer { margin-top: 16px; opacity: .7; font-size: 12px; }
-    .note { color: var(--muted); font-size: 12px; }
-  </style>
+<meta charset="UTF-8" />
+<title>RWB ToolKit Admin</title>
+<style>
+body {
+  font-family: sans-serif;
+  background: #f5f5f5;
+  padding: 20px;
+}
+h2 { margin-top: 30px; }
+pre {
+  background: #222;
+  color: #0f0;
+  padding: 10px;
+  overflow-x: auto;
+}
+input, button, select {
+  margin: 4px 0;
+  padding: 5px;
+}
+button { cursor: pointer; }
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <h1>WB SKU Checker — Админка лицензий</h1>
-    <div class="grid">
-      <section class="card">
-        <h2>Создать ключ</h2>
-        <label>Тариф</label>
-        <select id="plan">
-          <option value="week">week (7д)</option>
-          <option value="month" selected>month (30д)</option>
-          <option value="year">year (365д)</option>
-          <option value="test">test (3д)</option>
-        </select>
-        <div class="row">
-          <div>
-            <label>Дней</label>
-            <input id="days" type="number" placeholder="например, 14" />
-          </div>
-          <div>
-            <label>DeviceID</label>
-            <input id="device" type="text" placeholder="dev_xxx" />
-          </div>
-        </div>
-        <label>Примечание</label>
-        <input id="note" type="text" placeholder="комментарий" />
-        <div class="btns">
-          <button class="btn" id="btnCreate">Создать</button>
-          <button class="btn secondary" id="btnClear">Очистить</button>
-        </div>
-        <div style="margin-top:10px;">
-          <div class="note">Результат</div>
-          <div id="createOut" class="log"></div>
-        </div>
-      </section>
 
-      <section class="card">
-        <h2>Продлить ключ</h2>
-        <label>Ключ</label>
-        <input id="extKey" type="text" placeholder="SKU..." />
-        <label>Дней прибавить</label>
-        <input id="extDays" type="number" value="30" />
-        <div class="btns"><button class="btn" id="btnExtend">Продлить</button></div>
-        <div style="margin-top:10px;"><div class="note">Результат</div><div id="extendOut" class="log"></div></div>
-      </section>
+<h1>RWB ToolKit — Панель администратора</h1>
 
-      <section class="card">
-        <h2>Статус ключа</h2>
-        <label>Ключ</label>
-        <input id="statusKey" type="text" placeholder="SKU..." />
-        <div class="btns">
-          <button class="btn" id="btnActivate">Активировать</button>
-          <button class="btn secondary" id="btnDeactivate">Отключить</button>
-        </div>
-        <div style="margin-top:10px;"><div class="note">Результат</div><div id="statusOut" class="log"></div></div>
-      </section>
+<h2>Создать ключ</h2>
+<input id="createPlan" placeholder="plan (week|month|year|test)" />
+<input id="createDays" placeholder="дней (опционально)" />
+<input id="createKey" placeholder="кастомный ключ (опционально)" />
+<input id="createNote" placeholder="примечание (опционально)" />
+<input id="createDevice" placeholder="device id (опционально)" />
+<br>
+<button id="btnCreate">Создать</button>
+<pre id="createOut"></pre>
 
-      <section class="card">
-        <h2>Привязка / Инфо</h2>
-        <label>Ключ</label>
-        <input id="bindKey" type="text" placeholder="SKU..." />
-        <label>DeviceID</label>
-        <input id="bindDevice" type="text" placeholder="dev_xxx" />
-        <div class="btns">
-          <button class="btn" id="btnBind">Привязать</button>
-          <button class="btn secondary" id="btnInfo">Info</button>
-        </div>
-        <div style="margin-top:10px;"><div class="note">Результат</div><div id="bindOut" class="log"></div></div>
-      </section>
-    </div>
-    <footer>Сервер: <span id="baseUrl"></span></footer>
-  </div>
+<h2>Продлить ключ</h2>
+<input id="extendKey" placeholder="ключ" />
+<input id="extendDays" placeholder="дней" />
+<br>
+<button id="btnExtend">Продлить</button>
+<pre id="extendOut"></pre>
 
-  <script>
-    const BASE = location.origin;
-    const $ = (id) => document.getElementById(id);
-    const pretty = (obj) => JSON.stringify(obj, null, 2);
-    const out = (el, data) => el.textContent = typeof data === 'string' ? data : pretty(data);
-    document.getElementById('baseUrl').textContent = BASE;
+<h2>Статус ключа</h2>
+<input id="statusKey" placeholder="ключ" />
+<br>
+<button id="btnActivate">Активировать</button>
+<button id="btnDeactivate">Отключить</button>
+<pre id="statusOut"></pre>
 
-    async function post(path, body) {
-      const r = await fetch(BASE + path, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body || {})
-      });
-      const t = await r.text();
-      try { return JSON.parse(t); } catch { return { ok: false, raw: t }; }
-    }
-    async function get(path, params = {}) {
-      const q = new URLSearchParams(params).toString();
-      const r = await fetch(BASE + path + (q ? ('?' + q) : ''), { method: 'GET' });
-      const t = await r.text();
-      try { return JSON.parse(t); } catch { return { ok: false, raw: t }; }
-    }
+<h2>Привязать устройство</h2>
+<input id="bindKey" placeholder="ключ" />
+<input id="bindDevice" placeholder="device id" />
+<br>
+<button id="btnBind">Привязать</button>
+<pre id="bindOut"></pre>
 
-    // create
-    const plan = $('plan'), days = $('days'), device = $('device'), note = $('note');
-    const btnCreate = $('btnCreate'), btnClear = $('btnClear'), createOut = $('createOut');
-    btnCreate.onclick = async () => {
-      btnCreate.disabled = true;
-      const data = await post('/api/admin/create', {
-        plan: plan.value,
-        days: days.value ? Number(days.value) : undefined,
-        device: device.value.trim() || undefined,
-        note: note.value.trim() || undefined
-      });
-      out(createOut, data);
-      btnCreate.disabled = false;
-    };
-    btnClear.onclick = () => { plan.value = 'month'; days.value = ''; device.value = ''; note.value=''; createOut.textContent=''; };
+<h2>Инфо о ключе</h2>
+<input id="infoKey" placeholder="ключ" />
+<br>
+<button id="btnInfo">Получить</button>
+<pre id="infoOut"></pre>
 
-    // extend
-    const extKey = $('extKey'), extDays = $('extDays'), btnExtend = $('btnExtend'), extendOut = $('extendOut');
-    btnExtend.onclick = async () => {
-      const key = extKey.value.trim();
-      const d = Number(extDays.value || '0');
-      if (!key || !d) return out(extendOut, { ok:false, error:'Введите ключ и дни' });
-      const data = await post('/api/admin/extend', { key, days: d });
-      out(extendOut, data);
-    };
+<script>
+function $(id) { return document.getElementById(id); }
+function out(el, data) {
+  el.textContent = JSON.stringify(data, null, 2);
+}
 
-    // status
-    const statusKey = $('statusKey'), btnActivate = $('btnActivate'), btnDeactivate = $('btnDeactivate'), statusOut = $('statusOut');
-    btnActivate.onclick = async () => {
-      const key = statusKey.value.trim();
-      if (!key) return out(statusOut, { ok:false, error:'Введите ключ' });
-      const data = await post('/api/admin/set-active', { key, active: true });
-      out(statusOut, data);
-    };
-    btnDeactivate.onclick = async () => {
-      const key = statusKey.value.trim();
-      if (!key) return out(statusOut, { ok:false, error:'Введите ключ' });
-      const data = await post('/api/admin/set-active', { key, active: false });
-      out(statusOut, data);
-    };
+async function post(path, body) {
+  const r = await fetch(path, {
+    method: 'POST',
+    headers: { 'Content-Type':'application/json' },
+    body: JSON.stringify(body || {})
+  });
+  return r.json();
+}
 
-    // bind/info
-    const bindKey = $('bindKey'), bindDevice = $('bindDevice'), btnBind = $('btnBind'), btnInfo = $('btnInfo'), bindOut = $('bindOut');
-    btnBind.onclick = async () => {
-      const key = bindKey.value.trim();
-      const dev = bindDevice.value.trim();
-      if (!key || !dev) return out(bindOut, { ok:false, error:'Нужны ключ и device' });
-      const data = await post('/api/admin/bind-device', { key, device: dev });
-      out(bindOut, data);
-    };
-    btnInfo.onclick = async () => {
-      const key = bindKey.value.trim();
-      if (!key) return out(bindOut, { ok:false, error:'Введите ключ' });
-      const data = await get('/api/admin/info', { key });
-      out(bindOut, data);
-    };
-  </script>
+async function get(path) {
+  const r = await fetch(path);
+  return r.json();
+}
+
+// create
+const createPlan = $('createPlan'), createDays = $('createDays'), createKey = $('createKey'),
+      createNote = $('createNote'), createDevice = $('createDevice'),
+      createOut = $('createOut'), btnCreate = $('btnCreate');
+
+btnCreate.onclick = async () => {
+  const data = await post('/api/admin/create', {
+    plan: createPlan.value.trim(),
+    days: Number(createDays.value) || undefined,
+    key: createKey.value.trim() || undefined,
+    note: createNote.value.trim() || undefined,
+    device: createDevice.value.trim() || undefined
+  });
+  out(createOut, data);
+};
+
+// extend
+const extendKey = $('extendKey'), extendDays = $('extendDays'), extendOut = $('extendOut'), btnExtend = $('btnExtend');
+
+btnExtend.onclick = async () => {
+  const data = await post('/api/admin/extend', {
+    key: extendKey.value.trim(),
+    days: Number(extendDays.value) || undefined
+  });
+  out(extendOut, data);
+};
+
+// status
+const statusKey = $('statusKey'), btnActivate = $('btnActivate'), btnDeactivate = $('btnDeactivate'), statusOut = $('statusOut');
+
+btnActivate.onclick = async () => {
+  const key = statusKey.value.trim();
+  if (!key) return out(statusOut, { ok:false, error:'Введите ключ' });
+  const data = await post('/api/admin/set-active', { key, isActive: true }); // исправлено
+  out(statusOut, data);
+};
+
+btnDeactivate.onclick = async () => {
+  const key = statusKey.value.trim();
+  if (!key) return out(statusOut, { ok:false, error:'Введите ключ' });
+  const data = await post('/api/admin/set-active', { key, isActive: false }); // исправлено
+  out(statusOut, data);
+};
+
+// bind
+const bindKey = $('bindKey'), bindDevice = $('bindDevice'), bindOut = $('bindOut'), btnBind = $('btnBind');
+
+btnBind.onclick = async () => {
+  const data = await post('/api/admin/bind-device', {
+    key: bindKey.value.trim(),
+    device: bindDevice.value.trim()
+  });
+  out(bindOut, data);
+};
+
+// info
+const infoKey = $('infoKey'), infoOut = $('infoOut'), btnInfo = $('btnInfo');
+
+btnInfo.onclick = async () => {
+  const data = await get('/api/admin/info?key=' + encodeURIComponent(infoKey.value.trim()));
+  out(infoOut, data);
+};
+</script>
+
 </body>
 </html>
