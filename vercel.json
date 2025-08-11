@@ -1,6 +1,5 @@
 {
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "^/$", "dest": "/admin.html" }
-  ]
+  "functions": {
+    "api/**/*.{js,ts}": { "runtime": "nodejs22.x" }
+  }
 }
